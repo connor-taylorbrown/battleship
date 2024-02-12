@@ -101,9 +101,17 @@ def create_board():
     return setup_board(new_board(), ships)
 
 
-def next_player(state: Game):
+def next_player(state: Game) -> int:
     players = len(state.players)
     return (state.player + 1) % players
+
+
+def is_started(state: Game) -> bool:
+    return len(state.players) == 2
+
+
+def can_move(state: Game, viewer: str) -> bool:
+    return viewer == state.players[state.player].id
 
 
 class GameServer:
@@ -153,7 +161,7 @@ class GameServer:
     
     @update_state
     @log
-    def join(self, state: Game, player: str) -> dict:
+    def join(self, state: Game, player: str) -> Game:
         players = state.players
         if len(players) < 2 and player not in [p.id for p in players]:
             return {

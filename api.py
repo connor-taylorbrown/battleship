@@ -1,7 +1,7 @@
 from functools import wraps
 import logging
 import uuid
-from battleship.server import GameServer, StateUpdater
+from battleship.server import GameServer, StateUpdater, can_move, is_started
 from flask import Flask, make_response, render_template, redirect, request, url_for
 
 from battleship.view import View
@@ -48,17 +48,33 @@ def configure_routing(app: Flask, updater: StateUpdater):
     def join(player, game):
         game = int(game)
         if not server.exists(game):
+            logger.info("Game %s does not exist. Redirecting...", game)
             return redirect(url_for('create'))
         
+        logger.info("Player %s has joined game %s", player, game)
         state = server.join(server.get(game), player)
-        return render_template('index.html', game=game, **view.render(state, player))
+        if not is_started(state):
+            logger.info("Game %s has not started, polling state", game)
+            strategy = 'poll'
+        elif not can_move(state, player):
+            logger.info("Player %s awaits turn, polling state", player)
+            strategy = 'poll'
+        else:
+            strategy = 'state'
+
+        return render_template('index.html', game=game, strategy=strategy, **view.render(state, player))
     
     @app.get('/<game>/poll')
     @get_cookie('player-id')
     def poll(player, game):
         game = int(game)
         state = server.get(game)
-        return render_template('partials/poll.html', game=game, **view.render(state, player))
+        if is_started(state) and can_move(state, player):
+            logger.info("Player %s can take turn, stop polling", player)
+            strategy = 'state'
+        else:
+            strategy = 'poll'
+        return render_template(f'partials/{strategy}.html', game=game, **view.render(state, player))
     
     @app.post('/<game>/target')
     @get_cookie('player-id')
@@ -70,6 +86,6 @@ def configure_routing(app: Flask, updater: StateUpdater):
         if state.players[board].id != player:
             state = server.target(state, board, position)
         
-        return render_template('partials/state.html', game=game, **view.render(state, player))
+        return render_template('partials/poll.html', game=game, **view.render(state, player))
     
     return app

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from battleship.server import Game, Player, Status
+from battleship.server import Game, Player, Status, can_move
 
 
 class BoardView(ABC):
@@ -55,7 +55,7 @@ class View:
     def render(self, state: Game, viewer: str):
         return {
             **vars(state),
-            'canMove': viewer == state.players[state.player].id,
+            'canMove': can_move(state, viewer),
             'boards': [self.view_board(player, viewer, state.player != i) for i, player in enumerate(state.players)]
         }
 
