@@ -2,14 +2,6 @@
 
 ## Setup guide
 
-### JSON Server
-Reference: https://www.npmjs.com/package/json-server
-1. `npm update -g npm`: Update npm to latest version.
-1. `npm install -g json-server`: Install json-server host tool globally.
-1. `json-server --watch json/quotes.json`: Serve `json/quotes.json`, watching file for changes.
-
-Proceed from step 3 (Serve JSON) when json-server is already installed.
-
 ### Tailwind
 Reference: https://tailwindcss.com/docs/installation
 1. `npm install -D tailwindcss`: Add tailwindcss as a dev dependency.
@@ -33,7 +25,7 @@ Reference: https://flask-htmx.readthedocs.io/en/latest/quickstart.html
 1. `python3 -m pip install -r requirements.txt`: Install packages required to run application. Invoking `pip` as a Python module avoids issues related to having separate or missing Python installs, such as after an update.
 
 #### Development
-This will invoke `app.create_app()`, and attempt to load data from json-server.
+This will invoke `app.create_app()`, and attempt to load data from [TinyDb](https://tinydb.readthedocs.io/en/latest/index.html)
 1. `flask run --debug`: Launch the application in debug mode.
 
 #### Production

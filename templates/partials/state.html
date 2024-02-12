@@ -1,0 +1,36 @@
+<div id="state">
+    <div class="text-center pb-8">
+        {% if canMove %}
+        <p>Your move</p>
+        {% else %}
+        <p>Player {{ player }} to move</p>
+        {% endif %}
+    </div>
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {% for board in boards %}
+        {% set b=loop.index0 %}
+        <div>
+            <table>
+                {% for row in board %}
+                <tr>
+                    {% set y=loop.index0 %}
+                    {% for cell in row %}
+                    <td class="border-solid border-2 border-blue-500">
+                        {% if cell.target %}
+                        <button hx-post="{{ url_for('target', game=game, board=b, x=loop.index0, y=y) }}" hx-target="#state" hx-swap="outerHTML" class="{{ cell.background }}">
+                            {{ cell.status }}
+                        </button>
+                        {% else %}
+                        <button class="{{ cell.background }}">
+                            {{ cell.status }}
+                        </button>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+</div>
