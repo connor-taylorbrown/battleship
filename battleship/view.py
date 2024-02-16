@@ -1,14 +1,36 @@
 from abc import ABC, abstractmethod
+from battleship.model import Ship
 from battleship.server import Game, Player, Status, can_move
 
 
 class BoardView(ABC):
-    def __init__(self, active: bool):
+    def __init__(self, style: dict, active: bool):
+        self.style = style
         self.active = active
 
     @abstractmethod
     def view_cell(self, cell: Status):
         pass
+
+    def peg_tile(self, targeted: bool, occupied: bool):
+        if targeted and occupied:
+            return self.style['PEG_HIT']
+        elif targeted:
+            return self.style['PEG_MISS']
+        else:
+            return self.style['PEG_NONE']
+
+    def ship_tile(self, ship: Ship):
+        name = ship.type.name.lower()
+        classes = [f'cell-{name}-{ship.offset}']
+        if ship.bearing == (0, 1):
+            classes.append(self.style['SHIP_UP'])
+        elif ship.bearing == (0, -1):
+            classes.append(self.style['SHIP_DOWN'])
+        elif ship.bearing == (-1, 0):
+            classes.append(self.style['SHIP_LEFT'])
+        
+        return ' '.join(classes)
     
 
 class PlayerBoard(BoardView):
@@ -16,18 +38,9 @@ class PlayerBoard(BoardView):
         targeted = cell.peg
         ship = cell.ship
 
-        if ship and targeted:
-            status = 'X'
-        elif ship:
-            status = ship.value
-        elif targeted:
-            status = 'O'
-        else:
-            status = ''
-
         return {
-            'background': 'square',
-            'status': status,
+            'background': self.ship_tile(ship) if ship else self.style['EMPTY'],
+            'status': self.peg_tile(targeted, ship),
             'target': None
         }
     
@@ -36,22 +49,18 @@ class OpponentBoard(BoardView):
     def view_cell(self, cell: Status):
         targeted = cell.peg
         occupied = cell.ship
-
-        if targeted and occupied:
-            status = 'X'
-        elif targeted:
-            status = 'O'
-        else:
-            status = ''
         
         return {
-            'background': 'square',
-            'status': status,
+            'background': self.style['EMPTY'],
+            'status': self.peg_tile(targeted, occupied),
             'target': self.active and not targeted
         }
     
 
 class View:
+    def __init__(self, style: dict):
+        self.style = style
+
     def render(self, state: Game, viewer: str):
         return {
             **vars(state),
@@ -61,9 +70,9 @@ class View:
 
     def view_board(self, player: Player, viewer: str, active: bool):
         if player.id == viewer:
-            view = PlayerBoard(active)
+            view = PlayerBoard(self.style, active)
         else:
-            view = OpponentBoard(active)
+            view = OpponentBoard(self.style, active)
         
         board = player.board
         return [

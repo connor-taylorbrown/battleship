@@ -1,16 +1,17 @@
-from battleship.server import Ship, Status, new_board, setup_board, try_add_ship
+from battleship.model import Ship
+from battleship.server import ShipType, Status, new_board, setup_board, try_add_ship
 
 
 def test_try_add_ship():
-    submarine = Ship(2), 3
-    cruiser = Ship(3), 3
+    submarine = ShipType(2), 3
+    cruiser = ShipType(3), 3
 
     def with_ship_at(board, origin, direction, ship):
         x0, y0 = origin
         vx, vy = direction
         type, length = ship
         for i in range(length):
-            board[y0+vy*i][x0+vx*i] = Status(ship=type, peg=False)
+            board[y0+vy*i][x0+vx*i] = Status(ship=Ship(type=type, bearing=direction, offset=i), peg=False)
 
         return board
 
@@ -34,12 +35,12 @@ def test_try_add_ship():
 
 
 def test_setup_board():
-    submarine = (Ship(2), 3)
-    cruiser = (Ship(3), 3)
+    submarine = (ShipType(2), 3)
+    cruiser = (ShipType(3), 3)
 
     def count_spaces(board, ships):
-        spaces = [cell for row in board for cell in row]
-        return {(ship, length): spaces.count(Status(ship=ship, peg=False)) for ship, length in ships}
+        spaces = [cell.ship and cell.ship.type for row in board for cell in row]
+        return {(ship, length): spaces.count(ship) for ship, length in ships}
 
     test_cases = [
         (new_board(), [submarine, cruiser], {submarine: 3, cruiser: 3})

@@ -1,6 +1,7 @@
 from functools import wraps
 import logging
 import uuid
+import tailwind
 from battleship.server import GameServer, StateUpdater, can_move, is_started
 from flask import Flask, make_response, render_template, redirect, request, url_for
 
@@ -11,7 +12,7 @@ def configure_routing(app: Flask, updater: StateUpdater):
     logger = app.logger
     logger.setLevel(logging.INFO)
     server = GameServer(updater, logger)
-    view = View()
+    view = View(tailwind.config)
 
     def get_cookie(key):
         def decorator(func):
@@ -74,6 +75,7 @@ def configure_routing(app: Flask, updater: StateUpdater):
             strategy = 'state'
         else:
             strategy = 'poll'
+
         return render_template(f'partials/{strategy}.html', game=game, **view.render(state, player))
     
     @app.post('/<game>/target')

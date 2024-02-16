@@ -16,15 +16,15 @@
                     {% set y=loop.index0 %}
                     {% for cell in row %}
                     <td class="border-solid border-2 border-blue-500">
-                        {% if cell.target %}
-                        <button hx-post="{{ url_for('target', game=game, board=b, x=loop.index0, y=y) }}" hx-target="#state" hx-swap="outerHTML" class="{{ cell.background }}">
-                            {{ cell.status }}
-                        </button>
-                        {% else %}
-                        <button class="{{ cell.background }}">
-                            {{ cell.status }}
-                        </button>
-                        {% endif %}
+                        <div class="{{ cell.background }} relative z-0">
+                            <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" class="absolute z-1">
+                                <circle cx="25" cy="25" r="5" class="{{ cell.status }}"></circle>
+                            </svg>
+                            {% if cell.target %}
+                            <button hx-post="{{ url_for('target', game=game, board=b, x=loop.index0, y=y) }}" hx-target="#state" hx-swap="outerHTML" class="cell-empty absolute z-2">
+                            </button>
+                            {% endif %}
+                        </div>
                     </td>
                     {% endfor %}
                 </tr>

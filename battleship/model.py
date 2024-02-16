@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 
-class Ship(int, Enum):
+class ShipType(int, Enum):
     DESTROYER = 1
     SUBMARINE = 2
     CRUISER = 3
@@ -11,9 +11,18 @@ class Ship(int, Enum):
     CARRIER = 5
 
 
+Vector = tuple[int, int]
+
+@dataclass
+class Ship:
+    type: ShipType
+    bearing: Vector
+    offset: int
+
+
 @dataclass
 class Status:
-    ship: Ship | None
+    ship: Ship
     peg: bool
 
 

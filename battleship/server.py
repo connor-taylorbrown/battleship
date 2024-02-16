@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import random
 import uuid
 
-from battleship.model import Board, Game, Player, Ship, Status
+from battleship.model import Board, Game, Player, Ship, ShipType, Status, Vector
 
 
 class StateUpdater(ABC):
@@ -29,7 +29,6 @@ def new_board() -> Board:
     return Board([[Status(ship=None, peg=False) for _ in range(width)] for _ in range(height)])
 
 
-Vector = tuple[int, int]
 def generate_position(board: Board) -> Vector:
     row = random.randint(0, len(board) - 1)
     col = random.randint(0, len(board[0]) - 1)
@@ -62,7 +61,7 @@ def try_add_ship(board: Board, ship: ShipPrototype, position: Vector, direction:
         if row[x].ship is not None:
             return board
         
-        row[x] = Status(ship=type, peg=False)
+        row[x] = Status(ship=Ship(type=type, bearing=direction, offset=i), peg=False)
 
     return new_board
 
@@ -72,7 +71,7 @@ class InitializationException(Exception):
 
 
 def setup_board(board: Board, ships: list[ShipPrototype]):
-    def add_ship(board, ship):
+    def add_ship(board: Board, ship: ShipPrototype):
         for _ in range(100):
             # This function is random and not guaranteed to succeed. Limit iterations
             position = generate_position(board)
@@ -92,11 +91,11 @@ def setup_board(board: Board, ships: list[ShipPrototype]):
 
 def create_board():
     ships = [
-        (Ship.DESTROYER, 5),
-        (Ship.SUBMARINE, 4),
-        (Ship.CRUISER, 3),
-        (Ship.BATTLESHIP, 3),
-        (Ship.CARRIER, 2),
+        (ShipType.DESTROYER, 2),
+        (ShipType.SUBMARINE, 3),
+        (ShipType.CRUISER, 3),
+        (ShipType.BATTLESHIP, 4),
+        (ShipType.CARRIER, 5),
     ]
     return setup_board(new_board(), ships)
 

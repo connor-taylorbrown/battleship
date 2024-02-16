@@ -10,6 +10,13 @@ Reference: https://tailwindcss.com/docs/installation
 
 Proceed from step 3 (Generate stylesheets) on existing projects where the necessary config files have already been created.
 
+### Sass
+Reference: https://sass-lang.com/install/
+1. `npm install -g sass`: Add Sass as a command line tool.
+1. `sass --watch sass/battleship.scss:static/css/battleship.css`: Compile custom stylesheets for Battleship graphics, using `--watch` to monitor changes.
+
+Proceed from step 2 (Compile custom stylesheets) on existing installations.
+
 ### HTMX
 Reference: https://htmx.org
 
