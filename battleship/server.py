@@ -111,8 +111,16 @@ def is_started(state: Game) -> bool:
     return len(state.players) == 2
 
 
+def is_finished(state: Game) -> bool:
+    return state.finished
+
+
 def can_move(state: Game, viewer: str) -> bool:
     return viewer == state.players[state.player].id
+
+
+def has_won(player: Player) -> bool:
+    return len(player.sunk) == len(ships)
 
 
 def is_sunk(board: Board, position: Vector) -> bool:
@@ -131,15 +139,12 @@ def is_sunk(board: Board, position: Vector) -> bool:
     return True
 
 
-def get_result(board: Board, position: Vector):
-    px, py = position
-    if is_sunk(board, position):
-        ship = board[py][px].ship.type
+def message(player: Player, result: Result):
+    if result is Result.SINK:
+        ship = player.sunk[-1]
         return Message(result=Result.SINK, ship=ship)
-    elif board[py][px].ship:
-        return Message(result=Result.HIT)
     else:
-        return Message(result=Result.MISS)
+        return Message(result=result)
 
 
 class GameServer:
@@ -193,18 +198,30 @@ class GameServer:
         players = state.players
         if len(players) < 2 and player not in [p.id for p in players]:
             return {
-                'players': players + [Player(id=player, board=create_board())]
+                'players': players + [Player(id=player, board=create_board(), sunk=[])]
             }
     
     @update_state
     @log
     def target(self, state: Game, board: int, position: Vector) -> Game:
         players = state.players
-        board = players[board].board
+        player = players[state.player]
+        opponent = players[board]
+        board = opponent.board
         x, y = position
         board[y][x].peg = True
+        
+        if is_sunk(board, position):
+            result = Result.SINK
+            player.sunk.append(board[y][x].ship.type)
+        elif board[y][x].ship:
+            result = Result.HIT
+        else:
+            result = Result.MISS
+
         return {
             'player': next_player(state),
             'players': players,
-            'message': get_result(board, position)
+            'message': message(player, result),
+            'finished': has_won(player)
         }

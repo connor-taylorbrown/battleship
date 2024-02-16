@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from battleship.model import Message, Result, Ship
-from battleship.server import Game, Player, Status, can_move
+from battleship.server import Game, Player, Status, can_move, has_won
 
 
 class BoardView(ABC):
-    def __init__(self, style: dict, active: bool):
+    def __init__(self, style: dict):
         self.style = style
-        self.active = active
 
     @abstractmethod
     def view_cell(self, cell: Status):
@@ -46,6 +46,10 @@ class PlayerBoard(BoardView):
     
 
 class OpponentBoard(BoardView):
+    def __init__(self, style: dict, active: bool):
+        super().__init__(style)
+        self.active = active
+
     def view_cell(self, cell: Status):
         targeted = cell.peg
         occupied = cell.ship
@@ -68,6 +72,28 @@ def message(message: Message):
         return 'Miss!'
     
 
+def viewer_won(state: Game, viewer: str):
+    [player] = [player for player in state.players if player.id == viewer]
+    return has_won(player)
+
+
+def prompt(state: Game, viewer: str):
+    if viewer_won(state, viewer):
+        return 'You win!'
+    elif state.finished:
+        return 'Game over'
+    elif can_move(state, viewer):
+        return 'Your move'
+    else:
+        return f'Player {state.player} to move'
+    
+
+@dataclass
+class PlayerView:
+    board: list[list[dict]]
+    sunk: list[str]
+    
+
 class View:
     def __init__(self, style: dict):
         self.style = style
@@ -76,22 +102,25 @@ class View:
         return {
             **vars(state),
             'message': message(state.message),
-            'canMove': can_move(state, viewer),
-            'boards': [self.view_board(player, viewer, state.player != i) for i, player in enumerate(state.players)]
+            'prompt': prompt(state, viewer),
+            'players': [self.view_board(state, player, viewer, i) for i, player in enumerate(state.players)]
         }
 
-    def view_board(self, player: Player, viewer: str, active: bool):
+    def view_board(self, state: Game, player: Player, viewer: str, i: int):
+        active = state.player != i and not state.finished
         if player.id == viewer:
-            view = PlayerBoard(self.style, active)
+            view = PlayerBoard(self.style)
         else:
             view = OpponentBoard(self.style, active)
         
         board = player.board
-        return [
-            [
-                view.view_cell(c)
-                for c in row
-            ]
-            for row in board
-        ]
+        return PlayerView(
+            sunk=[self.style['PEG_HIT'] for _ in player.sunk],
+            board=[
+                [
+                    view.view_cell(c)
+                    for c in row
+                ]
+                for row in board
+            ])
     

@@ -2,7 +2,7 @@ from functools import wraps
 import logging
 import uuid
 import tailwind
-from battleship.server import GameServer, StateUpdater, can_move, is_started
+from battleship.server import GameServer, StateUpdater, can_move, is_finished, is_started
 from flask import Flask, make_response, render_template, redirect, request, url_for
 
 from battleship.view import View
@@ -72,6 +72,9 @@ def configure_routing(app: Flask, updater: StateUpdater):
         state = server.get(game)
         if is_started(state) and can_move(state, player):
             logger.info("Player %s can take turn, stop polling", player)
+            strategy = 'state'
+        elif is_finished(state):
+            logger.info("Game finished, stop polling")
             strategy = 'state'
         else:
             strategy = 'poll'

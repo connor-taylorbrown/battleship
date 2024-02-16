@@ -33,6 +33,7 @@ Board = list[list[Status]]
 class Player:
     id: str
     board: Board
+    sunk: list[ShipType]
 
 
 @dataclass
@@ -53,4 +54,5 @@ class Game:
     player: int
     players: list[Player]
     name: str
+    finished: bool = False
     message: Message = None

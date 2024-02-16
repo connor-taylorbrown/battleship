@@ -3,18 +3,14 @@
         {% if message %}
         <p>{{ message }}</p>
         {% endif %}
-        {% if canMove %}
-        <p>Your move</p>
-        {% else %}
-        <p>Player {{ player }} to move</p>
-        {% endif %}
+        <p>{{ prompt }}</p>
     </div>
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {% for board in boards %}
+        {% for player in players %}
         {% set b=loop.index0 %}
         <div>
             <table>
-                {% for row in board %}
+                {% for row in player.board %}
                 <tr>
                     {% set y=loop.index0 %}
                     {% for cell in row %}
@@ -33,6 +29,15 @@
                 </tr>
                 {% endfor %}
             </table>
+            <div class="flex flex-row">
+                {% for status in player.sunk %}
+                <div class="cell-empty">
+                    <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="25" cy="25" r="5" class="{{ status }}"></circle>
+                    </svg>
+                </div>
+                {% endfor %}
+            </div>
         </div>
         {% endfor %}
     </div>
