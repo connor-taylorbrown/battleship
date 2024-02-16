@@ -36,7 +36,21 @@ class Player:
 
 
 @dataclass
+class Result(Enum):
+    MISS = 1
+    HIT = 2
+    SINK = 3
+
+
+@dataclass
+class Message:
+    result: Result
+    ship: ShipType = None
+
+
+@dataclass
 class Game:
     player: int
     players: list[Player]
     name: str
+    message: Message = None

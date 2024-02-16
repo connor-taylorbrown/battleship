@@ -2,7 +2,16 @@ from abc import ABC, abstractmethod
 import random
 import uuid
 
-from battleship.model import Board, Game, Player, Ship, ShipType, Status, Vector
+from battleship.model import Board, Game, Message, Player, Result, Ship, ShipType, Status, Vector
+
+
+ships = {
+    ShipType.DESTROYER: 2,
+    ShipType.SUBMARINE: 3,
+    ShipType.CRUISER: 3,
+    ShipType.BATTLESHIP: 4,
+    ShipType.CARRIER: 5,
+}
 
 
 class StateUpdater(ABC):
@@ -90,14 +99,7 @@ def setup_board(board: Board, ships: list[ShipPrototype]):
 
 
 def create_board():
-    ships = [
-        (ShipType.DESTROYER, 2),
-        (ShipType.SUBMARINE, 3),
-        (ShipType.CRUISER, 3),
-        (ShipType.BATTLESHIP, 4),
-        (ShipType.CARRIER, 5),
-    ]
-    return setup_board(new_board(), ships)
+    return setup_board(new_board(), [(k, ships[k]) for k in ships])
 
 
 def next_player(state: Game) -> int:
@@ -111,6 +113,33 @@ def is_started(state: Game) -> bool:
 
 def can_move(state: Game, viewer: str) -> bool:
     return viewer == state.players[state.player].id
+
+
+def is_sunk(board: Board, position: Vector) -> bool:
+    px, py = position
+    status = board[py][px]
+    ship = status.ship
+    if not ship:
+        return False
+    
+    vx, vy = ship.bearing
+    ox, oy = px - vx * ship.offset, py - vy * ship.offset
+    for i in range(ships[ship.type]):
+        if not board[vy*i+oy][vx*i+ox].peg:
+            return False
+        
+    return True
+
+
+def get_result(board: Board, position: Vector):
+    px, py = position
+    if is_sunk(board, position):
+        ship = board[py][px].ship.type
+        return Message(result=Result.SINK, ship=ship)
+    elif board[py][px].ship:
+        return Message(result=Result.HIT)
+    else:
+        return Message(result=Result.MISS)
 
 
 class GameServer:
@@ -176,5 +205,6 @@ class GameServer:
         board[y][x].peg = True
         return {
             'player': next_player(state),
-            'players': players
+            'players': players,
+            'message': get_result(board, position)
         }

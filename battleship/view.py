@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from battleship.model import Ship
+from battleship.model import Message, Result, Ship
 from battleship.server import Game, Player, Status, can_move
 
 
@@ -57,6 +57,17 @@ class OpponentBoard(BoardView):
         }
     
 
+def message(message: Message):
+    if not message:
+        return None
+    elif message.result is Result.SINK:
+        return f'{message.ship.name.title()} sunk!'
+    elif message.result is Result.HIT:
+        return 'Hit!'
+    elif message.result is Result.MISS:
+        return 'Miss!'
+    
+
 class View:
     def __init__(self, style: dict):
         self.style = style
@@ -64,6 +75,7 @@ class View:
     def render(self, state: Game, viewer: str):
         return {
             **vars(state),
+            'message': message(state.message),
             'canMove': can_move(state, viewer),
             'boards': [self.view_board(player, viewer, state.player != i) for i, player in enumerate(state.players)]
         }

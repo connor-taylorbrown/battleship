@@ -1,5 +1,8 @@
 <div id="state">
     <div class="text-center pb-8">
+        {% if message %}
+        <p>{{ message }}</p>
+        {% endif %}
         {% if canMove %}
         <p>Your move</p>
         {% else %}
