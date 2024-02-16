@@ -54,7 +54,10 @@ def configure_routing(app: Flask, updater: StateUpdater):
         
         logger.info("Player %s has joined game %s", player, game)
         state = server.join(server.get(game), player)
-        if not is_started(state):
+        if is_finished(state):
+            logger.info("Game %s finished, do not poll", game)
+            strategy = 'state'
+        elif not is_started(state):
             logger.info("Game %s has not started, polling state", game)
             strategy = 'poll'
         elif not can_move(state, player):
@@ -74,7 +77,7 @@ def configure_routing(app: Flask, updater: StateUpdater):
             logger.info("Player %s can take turn, stop polling", player)
             strategy = 'state'
         elif is_finished(state):
-            logger.info("Game finished, stop polling")
+            logger.info("Game %s finished, stop polling", game)
             strategy = 'state'
         else:
             strategy = 'poll'
@@ -91,6 +94,13 @@ def configure_routing(app: Flask, updater: StateUpdater):
         if state.players[board].id != player:
             state = server.target(state, board, position)
         
-        return render_template('partials/poll.html', game=game, **view.render(state, player))
+        if is_finished(state):
+            logger.info("Game %s won, do not poll", game)
+            strategy = 'state'
+        else:
+            logger.info("Player %s ends turn, start polling", player)
+            strategy = 'poll'
+
+        return render_template(f'partials/{strategy}.html', game=game, **view.render(state, player))
     
     return app
