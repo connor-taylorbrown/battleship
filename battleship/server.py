@@ -2,7 +2,16 @@ from abc import ABC, abstractmethod
 import random
 import uuid
 
-from battleship.model import Board, Game, Player, Ship, Status
+from battleship.model import Board, Game, Message, Player, Result, Ship, ShipType, Status, Vector
+
+
+ships = {
+    ShipType.DESTROYER: 2,
+    ShipType.SUBMARINE: 3,
+    ShipType.CRUISER: 3,
+    ShipType.BATTLESHIP: 4,
+    ShipType.CARRIER: 5,
+}
 
 
 class StateUpdater(ABC):
@@ -29,7 +38,6 @@ def new_board() -> Board:
     return Board([[Status(ship=None, peg=False) for _ in range(width)] for _ in range(height)])
 
 
-Vector = tuple[int, int]
 def generate_position(board: Board) -> Vector:
     row = random.randint(0, len(board) - 1)
     col = random.randint(0, len(board[0]) - 1)
@@ -62,7 +70,7 @@ def try_add_ship(board: Board, ship: ShipPrototype, position: Vector, direction:
         if row[x].ship is not None:
             return board
         
-        row[x] = Status(ship=type, peg=False)
+        row[x] = Status(ship=Ship(type=type, bearing=direction, offset=i), peg=False)
 
     return new_board
 
@@ -72,7 +80,7 @@ class InitializationException(Exception):
 
 
 def setup_board(board: Board, ships: list[ShipPrototype]):
-    def add_ship(board, ship):
+    def add_ship(board: Board, ship: ShipPrototype):
         for _ in range(100):
             # This function is random and not guaranteed to succeed. Limit iterations
             position = generate_position(board)
@@ -91,19 +99,52 @@ def setup_board(board: Board, ships: list[ShipPrototype]):
 
 
 def create_board():
-    ships = [
-        (Ship.DESTROYER, 5),
-        (Ship.SUBMARINE, 4),
-        (Ship.CRUISER, 3),
-        (Ship.BATTLESHIP, 3),
-        (Ship.CARRIER, 2),
-    ]
-    return setup_board(new_board(), ships)
+    return setup_board(new_board(), [(k, ships[k]) for k in ships])
 
 
-def next_player(state: Game):
+def next_player(state: Game) -> int:
     players = len(state.players)
     return (state.player + 1) % players
+
+
+def is_started(state: Game) -> bool:
+    return len(state.players) == 2
+
+
+def is_finished(state: Game) -> bool:
+    return state.finished
+
+
+def can_move(state: Game, viewer: str) -> bool:
+    return viewer == state.players[state.player].id
+
+
+def has_won(player: Player) -> bool:
+    return len(player.sunk) == len(ships)
+
+
+def is_sunk(board: Board, position: Vector) -> bool:
+    px, py = position
+    status = board[py][px]
+    ship = status.ship
+    if not ship:
+        return False
+    
+    vx, vy = ship.bearing
+    ox, oy = px - vx * ship.offset, py - vy * ship.offset
+    for i in range(ships[ship.type]):
+        if not board[vy*i+oy][vx*i+ox].peg:
+            return False
+        
+    return True
+
+
+def message(player: Player, result: Result):
+    if result is Result.SINK:
+        ship = player.sunk[-1]
+        return Message(result=Result.SINK, ship=ship)
+    else:
+        return Message(result=result)
 
 
 class GameServer:
@@ -153,21 +194,34 @@ class GameServer:
     
     @update_state
     @log
-    def join(self, state: Game, player: str) -> dict:
+    def join(self, state: Game, player: str) -> Game:
         players = state.players
         if len(players) < 2 and player not in [p.id for p in players]:
             return {
-                'players': players + [Player(id=player, board=create_board())]
+                'players': players + [Player(id=player, board=create_board(), sunk=[])]
             }
     
     @update_state
     @log
     def target(self, state: Game, board: int, position: Vector) -> Game:
         players = state.players
-        board = players[board].board
+        player = players[state.player]
+        opponent = players[board]
+        board = opponent.board
         x, y = position
         board[y][x].peg = True
+        
+        if is_sunk(board, position):
+            result = Result.SINK
+            player.sunk.append(board[y][x].ship.type)
+        elif board[y][x].ship:
+            result = Result.HIT
+        else:
+            result = Result.MISS
+
         return {
             'player': next_player(state),
-            'players': players
+            'players': players,
+            'message': message(player, result),
+            'finished': has_won(player)
         }

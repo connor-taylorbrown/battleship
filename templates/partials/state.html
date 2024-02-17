@@ -1,35 +1,43 @@
 <div id="state">
     <div class="text-center pb-8">
-        {% if canMove %}
-        <p>Your move</p>
-        {% else %}
-        <p>Player {{ player }} to move</p>
+        {% if message %}
+        <p>{{ message }}</p>
         {% endif %}
+        <p>{{ prompt }}</p>
     </div>
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {% for board in boards %}
+        {% for player in players %}
         {% set b=loop.index0 %}
         <div>
             <table>
-                {% for row in board %}
+                {% for row in player.board %}
                 <tr>
                     {% set y=loop.index0 %}
                     {% for cell in row %}
                     <td class="border-solid border-2 border-blue-500">
-                        {% if cell.target %}
-                        <button hx-post="{{ url_for('target', game=game, board=b, x=loop.index0, y=y) }}" hx-target="#state" hx-swap="outerHTML" class="{{ cell.background }}">
-                            {{ cell.status }}
-                        </button>
-                        {% else %}
-                        <button class="{{ cell.background }}">
-                            {{ cell.status }}
-                        </button>
-                        {% endif %}
+                        <div class="{{ cell.background }} relative z-0">
+                            <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" class="absolute z-1">
+                                <circle cx="25" cy="25" r="5" class="{{ cell.status }}"></circle>
+                            </svg>
+                            {% if cell.target %}
+                            <button hx-post="{{ url_for('target', game=game, board=b, x=loop.index0, y=y) }}" hx-target="#state" hx-swap="outerHTML" class="cell-empty absolute z-2">
+                            </button>
+                            {% endif %}
+                        </div>
                     </td>
                     {% endfor %}
                 </tr>
                 {% endfor %}
             </table>
+            <div class="flex flex-row">
+                {% for status in player.sunk %}
+                <div class="cell-empty">
+                    <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="25" cy="25" r="5" class="{{ status }}"></circle>
+                    </svg>
+                </div>
+                {% endfor %}
+            </div>
         </div>
         {% endfor %}
     </div>

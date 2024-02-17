@@ -4,12 +4,22 @@ import jsonpickle
 from tinydb import JSONStorage, TinyDB, where
 from tinydb_serialization import Serializer, SerializationMiddleware
 
-from battleship.model import Game, Player
+from battleship.model import Game, Message, Player
 from battleship.server import StateUpdater
 
 
 class PlayerSerializer(Serializer):
     OBJ_CLASS = Player
+
+    def encode(self, obj):
+        return jsonpickle.encode(obj)
+    
+    def decode(self, s):
+        return jsonpickle.decode(s)
+    
+
+class MessageSerializer(Serializer):
+    OBJ_CLASS = Message
 
     def encode(self, obj):
         return jsonpickle.encode(obj)
@@ -37,6 +47,7 @@ class TinyDbUpdater(StateUpdater):
     def __init__(self, listener: UpdateListener, path: str):
         serialization = SerializationMiddleware(JSONStorage)
         serialization.register_serializer(PlayerSerializer(), 'Player')
+        serialization.register_serializer(MessageSerializer(), 'Message')
         self.db = TinyDB(path, storage=serialization)
         self.await_update = listener.update
         self.await_read = listener.read
