@@ -2,7 +2,7 @@ from threading import Thread
 from api import configure_routing
 from flask import Flask
 
-from battleship.storage import TinyDbUpdater, UpdateListener
+from storage.tinydb import TinyDbUpdater, UpdateListener
 
 
 def create_app():

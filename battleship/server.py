@@ -16,19 +16,19 @@ ships = {
 
 class StateUpdater(ABC):
     @abstractmethod
-    def exists(self, id: int) -> bool:
+    def exists(self, id: str) -> bool:
         pass
     
     @abstractmethod
-    def get(self, id: int) -> Game:
+    def get(self, id: str) -> Game:
         pass
     
     @abstractmethod
-    def insert(self, game: Game) -> int:
+    def insert(self, game: Game) -> str:
         pass
 
     @abstractmethod
-    def update(self, game: Game, update: dict) -> Game:
+    def update(self, game: Game, id: str) -> Game:
         pass
 
 
@@ -170,40 +170,43 @@ class GameServer:
         return inner
     
     def update_state(func):
-        def inner(self: 'GameServer', game: Game, *args, **kwargs):
-            update = func(self, game, *args, **kwargs)
+        def inner(self: 'GameServer', id: str, *args, **kwargs):
+            update = func(self, id, *args, **kwargs)
             if update:
-                return self.games.update(game, update)
+                return self.games.update(update, id)
             else:
-                return game
+                return self.games.get(id)
         
         return inner
     
     @log
-    def exists(self, game: int) -> bool:
+    def exists(self, game: str) -> bool:
         return self.games.exists(game)
     
     @log
-    def get(self, game: int) -> Game:
+    def get(self, game: str) -> Game:
         return self.games.get(game)
 
     @insert_state
     @log
     def new_game(self) -> Game:
-        return Game(player=0, players=[], name=str(uuid.uuid4()))
+        return Game(player=0, players=[])
     
     @update_state
     @log
-    def join(self, state: Game, player: str) -> Game:
+    def join(self, game: str, player: str) -> Game:
+        state = self.games.get(game)
         players = state.players
         if len(players) < 2 and player not in [p.id for p in players]:
-            return {
+            return Game(**{
+                **vars(state),
                 'players': players + [Player(id=player, board=create_board(), sunk=[])]
-            }
+            })
     
     @update_state
     @log
-    def target(self, state: Game, board: int, position: Vector) -> Game:
+    def target(self, game: str, board: int, position: Vector) -> Game:
+        state = self.games.get(game)
         players = state.players
         player = players[state.player]
         opponent = players[board]
@@ -219,9 +222,9 @@ class GameServer:
         else:
             result = Result.MISS
 
-        return {
-            'player': next_player(state),
-            'players': players,
-            'message': message(player, result),
-            'finished': has_won(player)
-        }
+        return Game(
+            player=next_player(state),
+            players=players,
+            message=message(player, result),
+            finished=has_won(player)
+        )

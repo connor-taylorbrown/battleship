@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 
-class ShipType(int, Enum):
+class ShipType(Enum):
     DESTROYER = 1
     SUBMARINE = 2
     CRUISER = 3
@@ -53,6 +53,5 @@ class Message:
 class Game:
     player: int
     players: list[Player]
-    name: str
     finished: bool = False
     message: Message = None
