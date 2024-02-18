@@ -53,6 +53,5 @@ class Message:
 class Game:
     player: int
     players: list[Player]
-    name: str
     finished: bool = False
     message: Message = None

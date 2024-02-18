@@ -47,13 +47,12 @@ def configure_routing(app: Flask, updater: StateUpdater):
     @app.get('/<game>')
     @set_cookie('player-id', lambda: str(uuid.uuid4()))
     def join(player, game):
-        game = int(game)
         if not server.exists(game):
             logger.info("Game %s does not exist. Redirecting...", game)
             return redirect(url_for('create'))
         
         logger.info("Player %s has joined game %s", player, game)
-        state = server.join(server.get(game), player)
+        state = server.join(game, player)
         if is_finished(state):
             logger.info("Game %s finished, do not poll", game)
             strategy = 'state'
@@ -71,7 +70,6 @@ def configure_routing(app: Flask, updater: StateUpdater):
     @app.get('/<game>/poll')
     @get_cookie('player-id')
     def poll(player, game):
-        game = int(game)
         state = server.get(game)
         if is_started(state) and can_move(state, player):
             logger.info("Player %s can take turn, stop polling", player)
@@ -87,12 +85,11 @@ def configure_routing(app: Flask, updater: StateUpdater):
     @app.post('/<game>/target')
     @get_cookie('player-id')
     def target(player, game):
-        game = int(game)
         state = server.get(game)
         board = int(request.args.get('board'))
         position = int(request.args.get('x')), int(request.args.get('y'))
         if state.players[board].id != player:
-            state = server.target(state, board, position)
+            state = server.target(game, board, position)
         
         if is_finished(state):
             logger.info("Game %s won, do not poll", game)
