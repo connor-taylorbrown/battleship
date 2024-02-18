@@ -1,31 +1,10 @@
 import queue
-import jsonpickle
 
 from tinydb import JSONStorage, TinyDB, where
-from tinydb_serialization import Serializer, SerializationMiddleware
 
 from battleship.model import Game, Message, Player
 from battleship.server import StateUpdater
-
-
-class PlayerSerializer(Serializer):
-    OBJ_CLASS = Player
-
-    def encode(self, obj):
-        return jsonpickle.encode(obj)
-    
-    def decode(self, s):
-        return jsonpickle.decode(s)
-    
-
-class MessageSerializer(Serializer):
-    OBJ_CLASS = Message
-
-    def encode(self, obj):
-        return jsonpickle.encode(obj)
-    
-    def decode(self, s):
-        return jsonpickle.decode(s)
+from storage.serializer import deserialize, serialize
     
 
 class UpdateListener:
@@ -45,10 +24,7 @@ class UpdateListener:
 
 class TinyDbUpdater(StateUpdater):
     def __init__(self, listener: UpdateListener, path: str):
-        serialization = SerializationMiddleware(JSONStorage)
-        serialization.register_serializer(PlayerSerializer(), 'Player')
-        serialization.register_serializer(MessageSerializer(), 'Message')
-        self.db = TinyDB(path, storage=serialization)
+        self.db = TinyDB(path)
         self.await_update = listener.update
         self.await_read = listener.read
         
@@ -56,11 +32,11 @@ class TinyDbUpdater(StateUpdater):
         return self.db.contains(doc_id=id)
     
     def get(self, id: int) -> Game:
-        return Game(**self.db.get(doc_id=id))
+        return deserialize(self.db.get(doc_id=id), Game)
     
     def insert(self, game: Game) -> int:
-        return self.db.insert(vars(game))
+        return self.db.insert(serialize(game))
     
-    def update(self, game: Game, update: dict) -> Game:
-        self.await_update.put(lambda: self.db.update(update, where('name') == game.name))
+    def update(self, game: Game, update: Game) -> Game:
+        self.await_update.put(lambda: self.db.update(serialize(update), where('name') == game.name))
         return self.get(self.await_read.get())

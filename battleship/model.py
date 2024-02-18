@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 
-class ShipType(int, Enum):
+class ShipType(Enum):
     DESTROYER = 1
     SUBMARINE = 2
     CRUISER = 3

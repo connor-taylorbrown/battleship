@@ -1,6 +1,4 @@
 flask
 gunicorn
 google-cloud-storage
-jsonpickle
 tinydb
-tinydb-serialization

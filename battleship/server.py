@@ -28,7 +28,7 @@ class StateUpdater(ABC):
         pass
 
     @abstractmethod
-    def update(self, game: Game, update: dict) -> Game:
+    def update(self, game: Game, update: Game) -> Game:
         pass
 
 
@@ -197,9 +197,10 @@ class GameServer:
     def join(self, state: Game, player: str) -> Game:
         players = state.players
         if len(players) < 2 and player not in [p.id for p in players]:
-            return {
+            return Game(**{
+                **vars(state),
                 'players': players + [Player(id=player, board=create_board(), sunk=[])]
-            }
+            })
     
     @update_state
     @log
@@ -219,9 +220,10 @@ class GameServer:
         else:
             result = Result.MISS
 
-        return {
+        return Game(**{
+            **vars(state),
             'player': next_player(state),
             'players': players,
             'message': message(player, result),
             'finished': has_won(player)
-        }
+        })
