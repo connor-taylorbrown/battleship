@@ -10,8 +10,15 @@ def serialize_ship(offset):
     return {'type': 1, 'bearing': [1, 0], 'offset': offset}
 
 
-def board(factory):
-    return [[factory(x) for x in range(5)] for _ in range(5)]
+def board():
+    return [[Status(ship=ship(x), peg=True) for x in range(5)] for _ in range(5)]
+
+
+def serialize_board():
+    return [
+        {'row': [{'ship': serialize_ship(x), 'peg': True} for x in range(5)]}
+        for _ in range(5)
+    ]
 
 
 def test_serialize():
@@ -21,7 +28,7 @@ def test_serialize():
         (ShipType(1), 1),   # Serialize enum correctly
         ((1, 0), [1, 0]),   # Serialize tuple correctly
         (ship(2), serialize_ship(2)),   # Serialize class correctly
-        (board(lambda x: Status(ship=ship(x), peg=True)), board(lambda x: {'ship': serialize_ship(x), 'peg': True}))    # Serialize nested list correctly
+        (board(), serialize_board())    # Serialize nested list correctly
     ]
 
     for object, expected in test_cases:
@@ -37,7 +44,7 @@ def test_deserialize():
         (1, ShipType, ShipType(1)),
         ([1, 0], tuple[int, int], (1, 0)),
         (serialize_ship(2), Ship, ship(2)),
-        (board(lambda x: {'ship': serialize_ship(x), 'peg': True}), Board, board(lambda x: Status(ship=ship(x), peg=True)))
+        (serialize_board(), Board, board())
     ]
 
     for serializable, hint, expected in test_cases:

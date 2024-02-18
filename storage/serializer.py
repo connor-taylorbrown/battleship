@@ -13,7 +13,11 @@ def serialize(obj):
         return obj
     elif isinstance(obj, Enum):
         return obj.value
-    elif isinstance(obj, (tuple, list)):
+    elif isinstance(obj, tuple):
+        return [serialize(i) for i in obj]
+    elif isinstance(obj, list):
+        if obj and isinstance(obj[0], list):
+            return [{'row': serialize(i)} for i in obj]
         return [serialize(i) for i in obj]
     elif hasattr(obj, '__dict__'):
         d = vars(obj)
@@ -33,6 +37,8 @@ def deserialize(obj, hint: type):
         return tuple(deserialize(o, h) for o, h in zip(obj, args))
     elif get_origin(hint) == list:
         [h] = get_args(hint)
+        if get_origin(h) == list:
+            return [deserialize(o['row'], h) for o in obj]
         return [deserialize(o, h) for o in obj]
     elif is_dataclass(hint):
         args = fields(hint)

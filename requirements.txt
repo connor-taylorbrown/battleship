@@ -1,4 +1,4 @@
+firebase-admin
 flask
 gunicorn
-google-cloud-storage
 tinydb
