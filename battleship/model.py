@@ -32,6 +32,7 @@ Board = list[list[Status]]
 @dataclass
 class Player:
     id: str
+    name: str
     board: Board
     sunk: list[ShipType]
 

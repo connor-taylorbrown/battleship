@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from battleship.model import Message, Result, Ship
-from battleship.server import Game, Player, Status, can_move, has_won
+from battleship.server import Game, Player, Status, can_move, has_won, player
 
 
 class BoardView(ABC):
@@ -73,8 +73,12 @@ def message(message: Message):
     
 
 def viewer_won(state: Game, viewer: str):
-    [player] = [player for player in state.players if player.id == viewer]
-    return has_won(player)
+    players = [player for player in state.players if player.id == viewer]
+    if players:
+        [player] = players
+        return has_won(player)
+    
+    return False
 
 
 def prompt(state: Game, viewer: str):
@@ -85,7 +89,7 @@ def prompt(state: Game, viewer: str):
     elif can_move(state, viewer):
         return 'Your move'
     else:
-        return f'Player {state.player} to move'
+        return f'{player(state).name.title()} to move'
     
 
 @dataclass
