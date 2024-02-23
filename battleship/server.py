@@ -119,12 +119,12 @@ def has_joined(state: Game, viewer: str) -> bool:
     return viewer in [p.id for p in state.players]
 
 
-def player(state: Game) -> Player:
+def get_player(state: Game) -> Player:
     return state.players[state.player]
 
 
 def can_move(state: Game, viewer: str) -> bool:
-    return viewer == player(state).id
+    return has_joined(state, viewer) and viewer == get_player(state).id
 
 
 def has_won(player: Player) -> bool:
@@ -197,8 +197,8 @@ class GameServer:
 
     @insert_state
     @log
-    def new_game(self, player: str, name: str) -> Game:
-        return Game(player=0, players=[Player(id=player, name=name, board=create_board(), sunk=[])])
+    def new_game(self) -> Game:
+        return Game(player=0, players=[])
     
     @update_state
     @log

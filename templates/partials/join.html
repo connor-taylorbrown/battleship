@@ -1,0 +1,18 @@
+<div id="state">
+    {% if has_joined and not started %}
+    {% include "partials/start-poll.html" %}
+    {% endif %}
+    <form hx-post="{{ url_for('join', game=game) }}" hx-swap="outerHTML">
+        <label>Your name</label>
+        <input name="player-name" value="{{ viewer }}" {% if has_joined %} readonly {% endif %}>
+        {% if has_joined %}
+        <button disabled>
+            Waiting for opponent
+        </button>
+        {% else %}
+        <button>
+            Join Game
+        </button>
+        {% endif %}
+    </form>
+</div>

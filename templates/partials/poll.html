@@ -1,3 +1,6 @@
-<div id="poll" hx-swap="outerHTML" hx-target="#poll" hx-get="{{ url_for('poll', game=game) }}" hx-trigger="every 2s">
+{% include "partials/start-poll.html" %}
+{% if started and can_move or finished %}
+<div id="state" hx-swap-oob="outerHTML">
     {% include "partials/state.html" %}
 </div>
+{% endif %}

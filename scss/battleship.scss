@@ -4,15 +4,32 @@ $ships: 'carrier', 'battleship', 'cruiser', 'submarine', 'destroyer';
 @for $y from 0 through 4 {
   @for $x from 0 through 4 {
     .cell-#{list.nth($ships, $y + 1)}-#{$x} {
-      background: url("/static/battleship.png") (-$x*50px) (-$y*50px);
-      width: 50px;
-      height: 50px;
+      background: url("/static/battleship-125x125.png") (-$x*25px) (-$y*25px);
+      width: 25px;
+      height: 25px;
+    }
+
+    @media (min-width: 1280px) {
+      .cell-#{list.nth($ships, $y + 1)}-#{$x} {
+        background: url("/static/battleship-250x250.png") (-$x*50px) (-$y*50px);
+      }
     }
   }
 }
 
 .cell-empty {
   background: url("/static/square.png") 0 0;
-  width: 50px;
-  height: 50px;
+  width: 25px;
+  height: 25px;
+}
+
+@media (min-width: 1280px) {
+  .cell-empty {
+    background: url("/static/square.png") 0 0;
+  }
+
+  [class*="cell-"] {
+    width: 50px;
+    height: 50px;
+  }
 }
