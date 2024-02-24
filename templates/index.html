@@ -7,12 +7,13 @@
         <link href="{{ url_for('static', filename='css/battleship.css') }}" rel="stylesheet">
         <link href="{{ url_for('static', filename='favicon.ico') }}" rel="shortcut icon">
         <script src="https://unpkg.com/htmx.org@1.7.0/dist/htmx.js" type="text/javascript"></script>
+        <script src="https://unpkg.com/htmx.org/dist/ext/head-support.js" type="text/javascript"></script>
         <title>Battleship</title>
     </head>
-    <body>
+    <body hx-ext="head-support">
         <div class="flex h-screen bg-gradient-to-b from-blue-100 to-red-100">
             <div class="mx-auto my-auto">
-                {% include "partials/%s.html" % partial %}
+                {% include "components/%s.html" % page %}
             </div>
         </div>
     </body>

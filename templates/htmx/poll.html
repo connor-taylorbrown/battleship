@@ -1,6 +1,6 @@
-{% include "partials/start-poll.html" %}
+{% include "components/poll.html" %}
 {% if started and can_move or finished %}
 <div id="state" hx-swap-oob="outerHTML">
-    {% include "partials/state.html" %}
+    {% include "components/state.html" %}
 </div>
 {% endif %}
