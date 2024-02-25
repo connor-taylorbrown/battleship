@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+import time
 from battleship.model import Message, Result, Ship
 from battleship.server import Game, Player, Status, can_move, has_joined, has_won, is_finished, is_started, get_player
 
@@ -90,9 +91,19 @@ def prompt(state: Game, viewer: str):
     elif state.finished:
         return 'Game over'
     elif can_move(state, viewer):
-        return 'Your move'
+        return f'Your move, {get_player(state).name.title()}'
     elif len(state.players) > 0:
         return f'{get_player(state).name.title()} to move'
+    
+
+def timeout(state: Game):
+    age = time.time() - state.updated
+    if age <= 30:
+        return None
+    if is_started(state):
+        return 'state'
+    else:
+        return 'join'
     
 
 @dataclass
@@ -108,6 +119,8 @@ class View:
     def render(self, state: Game, viewer: str):
         return {
             **vars(state),
+            'player': get_player(state).name.title() if len(state.players) > 0 else None,
+            'timeout': has_joined(state, viewer) and timeout(state),
             'has_joined': has_joined(state, viewer),
             'viewer': get_viewer(state, viewer).name if has_joined(state, viewer) else '',
             'started': is_started(state),

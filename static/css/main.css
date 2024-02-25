@@ -714,6 +714,11 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
+.bg-blue-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(191 219 254 / var(--tw-bg-opacity));
+}
+
 .bg-gradient-to-b {
   background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
 }
@@ -738,6 +743,22 @@ video {
 
 .fill-white {
   fill: #fff;
+}
+
+.fill-blue-200 {
+  fill: #bfdbfe;
+}
+
+.fill-blue-100 {
+  fill: #dbeafe;
+}
+
+.fill-gray-100 {
+  fill: #f3f4f6;
+}
+
+.fill-sky-100 {
+  fill: #e0f2fe;
 }
 
 .px-1 {
@@ -812,6 +833,11 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.text-red-600 {
+  --tw-text-opacity: 1;
+  color: rgb(220 38 38 / var(--tw-text-opacity));
 }
 
 .opacity-0 {

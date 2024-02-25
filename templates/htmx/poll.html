@@ -3,4 +3,8 @@
 <div id="state" hx-swap-oob="outerHTML">
     {% include "components/state.html" %}
 </div>
+{% elif timeout %}
+<div id="state" hx-swap-oob="outerHTML">
+    {% include "components/%s.html" % timeout %}
+</div>
 {% endif %}

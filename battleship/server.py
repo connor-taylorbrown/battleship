@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import random
-import uuid
+import time
 
 from battleship.model import Board, Game, Message, Player, Result, Ship, ShipType, Status, Vector
 
@@ -197,17 +197,18 @@ class GameServer:
 
     @insert_state
     @log
-    def new_game(self) -> Game:
-        return Game(player=0, players=[])
+    def new_game(self) -> str:
+        return Game(player=0, players=[], updated=time.time())
     
     @update_state
     @log
     def join(self, game: str, player: str, name: str) -> Game:
         state = self.games.get(game)
         players = state.players
-        if len(players) < 2 and player not in [p.id for p in players]:
+        if len(players) < 2 and not has_joined(state, player):
             return Game(**{
                 **vars(state),
+                'updated': time.time(),
                 'players': players + [Player(id=player, name=name, board=create_board(), sunk=[])]
             })
     
@@ -234,5 +235,6 @@ class GameServer:
             player=next_player(state),
             players=players,
             message=message(player, result),
-            finished=has_won(player)
+            finished=has_won(player),
+            updated=time.time()
         )

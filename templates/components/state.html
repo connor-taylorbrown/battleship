@@ -1,8 +1,10 @@
 <div id="state">
-    {% if not finished and not can_move %}
-    {% include "components/poll.html" %}
-    {% endif %}
     <div class="text-center pb-8">
+        {% if timeout and not can_move %}
+        <p>{{ player }} has gone AWOL, please refresh</p>
+        {% elif not finished and not can_move %}
+        {% include "components/poll.html" %}
+        {% endif %}
         {% if message %}
         <p>{{ message }}</p>
         {% endif %}

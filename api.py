@@ -1,9 +1,9 @@
 from functools import wraps
-import json
 import logging
+import time
 import uuid
 import tailwind
-from battleship.server import GameServer, StateUpdater, is_finished, is_started
+from battleship.server import GameServer, StateUpdater, has_joined, is_finished, is_started
 from flask import Flask, make_response, render_template, request, url_for
 
 from battleship.view import View
@@ -73,6 +73,9 @@ def configure_routing(app: Flask, updater: StateUpdater):
     @get_cookie('player-id')
     def join(player, game):
         name = request.form['player-name']
+        if not name:
+            return render_template('htmx/join.html', game=game, validation={'name_empty': True})
+        
         state = server.join(game, player, name)
         if not is_started(state):
             return render_template('components/join.html', game=game)
@@ -83,7 +86,9 @@ def configure_routing(app: Flask, updater: StateUpdater):
     @get_cookie('player-id')
     def poll(player, game):
         state = server.get(game)
-        return render_template('htmx/poll.html', game=game, **view.render(state, player))
+        age = time.time() - state.updated
+        logger.info('Player %s polling: game %s last updated %s s ago', player, game, age)
+        return render_template('htmx/poll.html', game=game, interval=0.5*round(age), **view.render(state, player))
     
     @app.post('/games/<game>/target')
     @get_cookie('player-id')
