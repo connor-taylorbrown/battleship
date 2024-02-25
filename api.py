@@ -1,9 +1,10 @@
 from functools import wraps
 import logging
+import time
 import uuid
 import tailwind
-from battleship.server import GameServer, StateUpdater, can_move, is_finished, is_started
-from flask import Flask, make_response, render_template, redirect, request, url_for
+from battleship.server import GameServer, StateUpdater, has_joined, is_finished, is_started
+from flask import Flask, make_response, render_template, request, url_for
 
 from battleship.view import View
 
@@ -40,49 +41,56 @@ def configure_routing(app: Flask, updater: StateUpdater):
         return decorator
 
     @app.get('/')
+    @set_cookie('player-id', lambda: str(uuid.uuid4()))
+    def lobby(_):
+        return render_template('index.html', page='create')
+    
+    @app.post('/')
     def create():
         game = server.new_game()
-        return redirect(url_for('join', game=game))
-    
-    @app.get('/<game>')
-    @set_cookie('player-id', lambda: str(uuid.uuid4()))
-    def join(player, game):
-        if not server.exists(game):
-            logger.info("Game %s does not exist. Redirecting...", game)
-            return redirect(url_for('create'))
         
-        logger.info("Player %s has joined game %s", player, game)
-        state = server.join(game, player)
-        if is_finished(state):
-            logger.info("Game %s finished, do not poll", game)
-            strategy = 'state'
-        elif not is_started(state):
-            logger.info("Game %s has not started, polling state", game)
-            strategy = 'poll'
-        elif not can_move(state, player):
-            logger.info("Player %s awaits turn, polling state", player)
-            strategy = 'poll'
-        else:
-            strategy = 'state'
-
-        return render_template('index.html', game=game, strategy=strategy, **view.render(state, player))
+        response = make_response()
+        response.headers.add_header('HX-Redirect', url_for('game', game=game))
+        return response
     
-    @app.get('/<game>/poll')
+    @app.get('/games/<game>')
+    @set_cookie('player-id', lambda: str(uuid.uuid4()))
+    def game(player, game):
+        state = server.get(game)
+        if not is_finished(state) and not is_started(state):
+            logger.info("Game %s has not started, player %s to join", game, player)
+            return render_template('index.html', page='join', game=game)
+        else:
+            return render_template('index.html', page='state', game=game, **view.render(state, player))
+        
+    @app.get('/games/<game>/join')
+    @get_cookie('player-id')
+    def load_join(player, game):
+        state = server.get(game)
+        return render_template('htmx/join.html', game=game, **view.render(state, player))
+    
+    @app.post('/games/<game>')
+    @get_cookie('player-id')
+    def join(player, game):
+        name = request.form['player-name']
+        if not name:
+            return render_template('htmx/join.html', game=game, validation={'name_empty': True})
+        
+        state = server.join(game, player, name)
+        if not is_started(state):
+            return render_template('components/join.html', game=game)
+        else:
+            return render_template('components/state.html', game=game, **view.render(state, player))
+    
+    @app.get('/games/<game>/poll')
     @get_cookie('player-id')
     def poll(player, game):
         state = server.get(game)
-        if is_started(state) and can_move(state, player):
-            logger.info("Player %s can take turn, stop polling", player)
-            strategy = 'state'
-        elif is_finished(state):
-            logger.info("Game %s finished, stop polling", game)
-            strategy = 'state'
-        else:
-            strategy = 'poll'
-
-        return render_template(f'partials/{strategy}.html', game=game, **view.render(state, player))
+        age = time.time() - state.updated
+        logger.info('Player %s polling: game %s last updated %s s ago', player, game, age)
+        return render_template('htmx/poll.html', game=game, interval=0.5*round(age), **view.render(state, player))
     
-    @app.post('/<game>/target')
+    @app.post('/games/<game>/target')
     @get_cookie('player-id')
     def target(player, game):
         state = server.get(game)
@@ -90,14 +98,7 @@ def configure_routing(app: Flask, updater: StateUpdater):
         position = int(request.args.get('x')), int(request.args.get('y'))
         if state.players[board].id != player:
             state = server.target(game, board, position)
-        
-        if is_finished(state):
-            logger.info("Game %s won, do not poll", game)
-            strategy = 'state'
-        else:
-            logger.info("Player %s ends turn, start polling", player)
-            strategy = 'poll'
-
-        return render_template(f'partials/{strategy}.html', game=game, **view.render(state, player))
+            
+        return render_template('components/state.html', game=game, **view.render(state, player))
     
     return app

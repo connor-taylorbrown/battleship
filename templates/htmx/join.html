@@ -1,0 +1,36 @@
+<head>
+    <script hx-head="re-eval" src="{{ url_for('static', filename='js/clipboard.js') }}" type="text/javascript"></script>
+</head>
+<div id="state">
+    {% if timeout %}
+    <p>Opponent is taking some time</p>
+    {% elif has_joined and not started %}
+    {% include "components/poll.html" %}
+    {% endif %}
+    <form hx-post="{{ url_for('join', game=game) }}" hx-swap="outerHTML" hx-target="#state" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-6">
+            <label class="block text-gray-700 font-bold text-sm mb-2" for="player-name">Your name</label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="player-name" name="player-name" value="{{ viewer }}" {% if has_joined %} readonly {% endif %}>
+            {% if validation and validation.name_empty %}
+            <span class="text-sm text-red-600">Please enter a name</span>
+            {% endif %}
+        </div>
+        <div class="flex items-center space-x-4">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                {% if timeout %}
+                Refresh
+                {% elif has_joined %}
+                Awaiting opponent
+                {% else %}
+                Join Game
+                {% endif %}
+            </button>
+            <div class="group flex relative">
+                <span id="tooltip" class="opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 px-1 text-sm text-gray-100 rounded-md absolute mt-6"></span>
+                <a id="share" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="javascript:void(0)">
+                    Share link
+                </a>
+            </div>
+        </div>
+    </form>
+</div>

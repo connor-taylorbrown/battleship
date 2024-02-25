@@ -1,0 +1,5 @@
+{% if not interval %}
+{% set interval=2 %}
+{% endif %}
+<div id="poll" hx-swap="outerHTML" hx-target="#poll" hx-get="{{ url_for('poll', game=game) }}" hx-trigger="every {{ interval }}s">
+</div>

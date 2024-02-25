@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+import time
 from battleship.model import Message, Result, Ship
-from battleship.server import Game, Player, Status, can_move, has_won
+from battleship.server import Game, Player, Status, can_move, has_joined, has_won, is_finished, is_started, get_player
 
 
 class BoardView(ABC):
@@ -72,9 +73,16 @@ def message(message: Message):
         return 'Miss!'
     
 
-def viewer_won(state: Game, viewer: str):
+def get_viewer(state: Game, viewer: str):
     [player] = [player for player in state.players if player.id == viewer]
-    return has_won(player)
+    return player
+    
+
+def viewer_won(state: Game, viewer: str):
+    if not has_joined(state, viewer):
+        return False
+    
+    return has_won(get_viewer(state, viewer))
 
 
 def prompt(state: Game, viewer: str):
@@ -83,9 +91,19 @@ def prompt(state: Game, viewer: str):
     elif state.finished:
         return 'Game over'
     elif can_move(state, viewer):
-        return 'Your move'
+        return f'Your move, {get_player(state).name.title()}'
+    elif len(state.players) > 0:
+        return f'{get_player(state).name.title()} to move'
+    
+
+def timeout(state: Game):
+    age = time.time() - state.updated
+    if age <= 30:
+        return None
+    if is_started(state):
+        return 'state'
     else:
-        return f'Player {state.player} to move'
+        return 'join'
     
 
 @dataclass
@@ -101,16 +119,23 @@ class View:
     def render(self, state: Game, viewer: str):
         return {
             **vars(state),
+            'player': get_player(state).name.title() if len(state.players) > 0 else None,
+            'timeout': has_joined(state, viewer) and timeout(state),
+            'has_joined': has_joined(state, viewer),
+            'viewer': get_viewer(state, viewer).name if has_joined(state, viewer) else '',
+            'started': is_started(state),
+            'can_move': can_move(state, viewer),
+            'finished': is_finished(state),
             'message': message(state.message),
             'prompt': prompt(state, viewer),
             'players': [self.view_board(state, player, viewer, i) for i, player in enumerate(state.players)]
         }
 
     def view_board(self, state: Game, player: Player, viewer: str, i: int):
-        active = state.player != i and not state.finished
-        if player.id == viewer:
+        if not has_joined(state, viewer) or is_finished(state) or player.id == viewer:
             view = PlayerBoard(self.style)
         else:
+            active = state.player != i and not state.finished
             view = OpponentBoard(self.style, active)
         
         board = player.board

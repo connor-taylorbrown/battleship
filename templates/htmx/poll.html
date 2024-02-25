@@ -1,0 +1,10 @@
+{% include "components/poll.html" %}
+{% if started and can_move or finished %}
+<div id="state" hx-swap-oob="outerHTML">
+    {% include "components/state.html" %}
+</div>
+{% elif timeout %}
+<div id="state" hx-swap-oob="outerHTML">
+    {% include "components/%s.html" % timeout %}
+</div>
+{% endif %}

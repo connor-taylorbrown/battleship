@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import random
-import uuid
+import time
 
 from battleship.model import Board, Game, Message, Player, Result, Ship, ShipType, Status, Vector
 
@@ -115,8 +115,16 @@ def is_finished(state: Game) -> bool:
     return state.finished
 
 
+def has_joined(state: Game, viewer: str) -> bool:
+    return viewer in [p.id for p in state.players]
+
+
+def get_player(state: Game) -> Player:
+    return state.players[state.player]
+
+
 def can_move(state: Game, viewer: str) -> bool:
-    return viewer == state.players[state.player].id
+    return has_joined(state, viewer) and viewer == get_player(state).id
 
 
 def has_won(player: Player) -> bool:
@@ -189,18 +197,19 @@ class GameServer:
 
     @insert_state
     @log
-    def new_game(self) -> Game:
-        return Game(player=0, players=[])
+    def new_game(self) -> str:
+        return Game(player=0, players=[], updated=time.time())
     
     @update_state
     @log
-    def join(self, game: str, player: str) -> Game:
+    def join(self, game: str, player: str, name: str) -> Game:
         state = self.games.get(game)
         players = state.players
-        if len(players) < 2 and player not in [p.id for p in players]:
+        if len(players) < 2 and not has_joined(state, player):
             return Game(**{
                 **vars(state),
-                'players': players + [Player(id=player, board=create_board(), sunk=[])]
+                'updated': time.time(),
+                'players': players + [Player(id=player, name=name, board=create_board(), sunk=[])]
             })
     
     @update_state
@@ -226,5 +235,6 @@ class GameServer:
             player=next_player(state),
             players=players,
             message=message(player, result),
-            finished=has_won(player)
+            finished=has_won(player),
+            updated=time.time()
         )
