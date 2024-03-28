@@ -1,287 +1,287 @@
 .cell-carrier-0 {
-  background: url("/static/battleship-125x125.png") 0px 0px;
+  background: url("../images/battleship-125x125.png") 0px 0px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-carrier-0 {
-    background: url("/static/battleship-250x250.png") 0px 0px;
+    background: url("../images/battleship-250x250.png") 0px 0px;
   }
 }
 .cell-carrier-1 {
-  background: url("/static/battleship-125x125.png") -25px 0px;
+  background: url("../images/battleship-125x125.png") -25px 0px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-carrier-1 {
-    background: url("/static/battleship-250x250.png") -50px 0px;
+    background: url("../images/battleship-250x250.png") -50px 0px;
   }
 }
 .cell-carrier-2 {
-  background: url("/static/battleship-125x125.png") -50px 0px;
+  background: url("../images/battleship-125x125.png") -50px 0px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-carrier-2 {
-    background: url("/static/battleship-250x250.png") -100px 0px;
+    background: url("../images/battleship-250x250.png") -100px 0px;
   }
 }
 .cell-carrier-3 {
-  background: url("/static/battleship-125x125.png") -75px 0px;
+  background: url("../images/battleship-125x125.png") -75px 0px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-carrier-3 {
-    background: url("/static/battleship-250x250.png") -150px 0px;
+    background: url("../images/battleship-250x250.png") -150px 0px;
   }
 }
 .cell-carrier-4 {
-  background: url("/static/battleship-125x125.png") -100px 0px;
+  background: url("../images/battleship-125x125.png") -100px 0px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-carrier-4 {
-    background: url("/static/battleship-250x250.png") -200px 0px;
+    background: url("../images/battleship-250x250.png") -200px 0px;
   }
 }
 .cell-battleship-0 {
-  background: url("/static/battleship-125x125.png") 0px -25px;
+  background: url("../images/battleship-125x125.png") 0px -25px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-battleship-0 {
-    background: url("/static/battleship-250x250.png") 0px -50px;
+    background: url("../images/battleship-250x250.png") 0px -50px;
   }
 }
 .cell-battleship-1 {
-  background: url("/static/battleship-125x125.png") -25px -25px;
+  background: url("../images/battleship-125x125.png") -25px -25px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-battleship-1 {
-    background: url("/static/battleship-250x250.png") -50px -50px;
+    background: url("../images/battleship-250x250.png") -50px -50px;
   }
 }
 .cell-battleship-2 {
-  background: url("/static/battleship-125x125.png") -50px -25px;
+  background: url("../images/battleship-125x125.png") -50px -25px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-battleship-2 {
-    background: url("/static/battleship-250x250.png") -100px -50px;
+    background: url("../images/battleship-250x250.png") -100px -50px;
   }
 }
 .cell-battleship-3 {
-  background: url("/static/battleship-125x125.png") -75px -25px;
+  background: url("../images/battleship-125x125.png") -75px -25px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-battleship-3 {
-    background: url("/static/battleship-250x250.png") -150px -50px;
+    background: url("../images/battleship-250x250.png") -150px -50px;
   }
 }
 .cell-battleship-4 {
-  background: url("/static/battleship-125x125.png") -100px -25px;
+  background: url("../images/battleship-125x125.png") -100px -25px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-battleship-4 {
-    background: url("/static/battleship-250x250.png") -200px -50px;
+    background: url("../images/battleship-250x250.png") -200px -50px;
   }
 }
 .cell-cruiser-0 {
-  background: url("/static/battleship-125x125.png") 0px -50px;
+  background: url("../images/battleship-125x125.png") 0px -50px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-cruiser-0 {
-    background: url("/static/battleship-250x250.png") 0px -100px;
+    background: url("../images/battleship-250x250.png") 0px -100px;
   }
 }
 .cell-cruiser-1 {
-  background: url("/static/battleship-125x125.png") -25px -50px;
+  background: url("../images/battleship-125x125.png") -25px -50px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-cruiser-1 {
-    background: url("/static/battleship-250x250.png") -50px -100px;
+    background: url("../images/battleship-250x250.png") -50px -100px;
   }
 }
 .cell-cruiser-2 {
-  background: url("/static/battleship-125x125.png") -50px -50px;
+  background: url("../images/battleship-125x125.png") -50px -50px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-cruiser-2 {
-    background: url("/static/battleship-250x250.png") -100px -100px;
+    background: url("../images/battleship-250x250.png") -100px -100px;
   }
 }
 .cell-cruiser-3 {
-  background: url("/static/battleship-125x125.png") -75px -50px;
+  background: url("../images/battleship-125x125.png") -75px -50px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-cruiser-3 {
-    background: url("/static/battleship-250x250.png") -150px -100px;
+    background: url("../images/battleship-250x250.png") -150px -100px;
   }
 }
 .cell-cruiser-4 {
-  background: url("/static/battleship-125x125.png") -100px -50px;
+  background: url("../images/battleship-125x125.png") -100px -50px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-cruiser-4 {
-    background: url("/static/battleship-250x250.png") -200px -100px;
+    background: url("../images/battleship-250x250.png") -200px -100px;
   }
 }
 .cell-submarine-0 {
-  background: url("/static/battleship-125x125.png") 0px -75px;
+  background: url("../images/battleship-125x125.png") 0px -75px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-submarine-0 {
-    background: url("/static/battleship-250x250.png") 0px -150px;
+    background: url("../images/battleship-250x250.png") 0px -150px;
   }
 }
 .cell-submarine-1 {
-  background: url("/static/battleship-125x125.png") -25px -75px;
+  background: url("../images/battleship-125x125.png") -25px -75px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-submarine-1 {
-    background: url("/static/battleship-250x250.png") -50px -150px;
+    background: url("../images/battleship-250x250.png") -50px -150px;
   }
 }
 .cell-submarine-2 {
-  background: url("/static/battleship-125x125.png") -50px -75px;
+  background: url("../images/battleship-125x125.png") -50px -75px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-submarine-2 {
-    background: url("/static/battleship-250x250.png") -100px -150px;
+    background: url("../images/battleship-250x250.png") -100px -150px;
   }
 }
 .cell-submarine-3 {
-  background: url("/static/battleship-125x125.png") -75px -75px;
+  background: url("../images/battleship-125x125.png") -75px -75px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-submarine-3 {
-    background: url("/static/battleship-250x250.png") -150px -150px;
+    background: url("../images/battleship-250x250.png") -150px -150px;
   }
 }
 .cell-submarine-4 {
-  background: url("/static/battleship-125x125.png") -100px -75px;
+  background: url("../images/battleship-125x125.png") -100px -75px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-submarine-4 {
-    background: url("/static/battleship-250x250.png") -200px -150px;
+    background: url("../images/battleship-250x250.png") -200px -150px;
   }
 }
 .cell-destroyer-0 {
-  background: url("/static/battleship-125x125.png") 0px -100px;
+  background: url("../images/battleship-125x125.png") 0px -100px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-destroyer-0 {
-    background: url("/static/battleship-250x250.png") 0px -200px;
+    background: url("../images/battleship-250x250.png") 0px -200px;
   }
 }
 .cell-destroyer-1 {
-  background: url("/static/battleship-125x125.png") -25px -100px;
+  background: url("../images/battleship-125x125.png") -25px -100px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-destroyer-1 {
-    background: url("/static/battleship-250x250.png") -50px -200px;
+    background: url("../images/battleship-250x250.png") -50px -200px;
   }
 }
 .cell-destroyer-2 {
-  background: url("/static/battleship-125x125.png") -50px -100px;
+  background: url("../images/battleship-125x125.png") -50px -100px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-destroyer-2 {
-    background: url("/static/battleship-250x250.png") -100px -200px;
+    background: url("../images/battleship-250x250.png") -100px -200px;
   }
 }
 .cell-destroyer-3 {
-  background: url("/static/battleship-125x125.png") -75px -100px;
+  background: url("../images/battleship-125x125.png") -75px -100px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-destroyer-3 {
-    background: url("/static/battleship-250x250.png") -150px -200px;
+    background: url("../images/battleship-250x250.png") -150px -200px;
   }
 }
 .cell-destroyer-4 {
-  background: url("/static/battleship-125x125.png") -100px -100px;
+  background: url("../images/battleship-125x125.png") -100px -100px;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-destroyer-4 {
-    background: url("/static/battleship-250x250.png") -200px -200px;
+    background: url("../images/battleship-250x250.png") -200px -200px;
   }
 }
 .cell-empty {
-  background: url("/static/square.png") 0 0;
+  background: url("../images/square.png") 0 0;
   width: 25px;
   height: 25px;
 }
 
 @media (min-width: 1280px) {
   .cell-empty {
-    background: url("/static/square.png") 0 0;
+    background: url("../images/square.png") 0 0;
   }
   [class*=cell-] {
     width: 50px;

@@ -13,7 +13,7 @@ Proceed from step 3 (Generate stylesheets) on existing projects where the necess
 ### Sass
 Reference: https://sass-lang.com/install/
 1. `npm install -g sass`: Add Sass as a command line tool.
-1. `sass --watch sass/battleship.scss:static/css/battleship.css`: Compile custom stylesheets for Battleship graphics, using `--watch` to monitor changes.
+1. `sass --watch scss/battleship.scss:static/css/battleship.css`: Compile custom stylesheets for Battleship graphics, using `--watch` to monitor changes.
 
 Proceed from step 2 (Compile custom stylesheets) on existing installations.
 
